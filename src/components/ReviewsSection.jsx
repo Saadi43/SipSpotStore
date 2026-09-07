@@ -1,49 +1,63 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Star, MapPin, ShieldCheck } from 'lucide-react';
 import { REVIEWS } from '../data/menuData';
 
 export default function ReviewsSection() {
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div className="text-center max-w-2xl mx-auto mb-14">
-        <span className="badge-pill bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-3">
-          ⭐ CUSTOMER LOVE
-        </span>
-        <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-          WHAT <span className="gradient-text-sun">RAWALPINDI</span> SAYS
-        </h2>
-      </div>
+    <section className="py-12 bg-white border-y border-stone-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="text-center max-w-xl mx-auto mb-10">
+          <span className="px-3 py-1 rounded-full bg-stone-100 text-stone-700 font-extrabold text-[10px] uppercase tracking-widest border border-stone-200">
+            Rawalpindi & Islamabad Ratings
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-black text-stone-900 tracking-tight mt-3 mb-2 font-heading">
+            WHAT OUR CUSTOMERS SAY
+          </h2>
+          <p className="text-stone-500 text-xs sm:text-sm font-medium">
+            Real customer reviews for The Sip Spot near Nisar Hospital, Westridge 1, Rawalpindi.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {REVIEWS.map((review) => (
-          <div
-            key={review.id}
-            className="p-6 rounded-3xl glass-panel border border-slate-800 hover:border-amber-400/40 transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center gap-1 text-amber-400 mb-4">
-                {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400" />
-                ))}
-              </div>
-              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6 italic">
-                "{review.comment}"
-              </p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {REVIEWS.map((rev) => (
+            <div
+              key={rev.id}
+              className="bg-stone-50 p-6 rounded-2xl border border-stone-200 flex flex-col justify-between"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center gap-1 text-yellow-400">
+                  {[...Array(rev.rating)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-yellow-400" />
+                  ))}
+                </div>
 
-            <div className="flex items-center gap-3 pt-4 border-t border-slate-800">
-              <img
-                src={review.avatar}
-                alt={review.name}
-                className="w-10 h-10 rounded-full object-cover border border-amber-400/40"
-              />
-              <div>
-                <h4 className="text-sm font-bold text-white">{review.name}</h4>
-                <p className="text-[11px] text-slate-400">{review.location}</p>
+                <p className="text-stone-700 text-xs sm:text-sm leading-relaxed italic">
+                  "{rev.comment}"
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 pt-4 mt-4 border-t border-stone-200">
+                <img
+                  src={rev.avatar}
+                  alt={rev.name}
+                  className="w-9 h-9 rounded-full object-cover border border-stone-300"
+                />
+                <div>
+                  <div className="flex items-center gap-1">
+                    <h4 className="text-xs font-extrabold text-stone-900 font-heading">{rev.name}</h4>
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  </div>
+                  <p className="text-[11px] text-stone-500 flex items-center gap-1 font-medium">
+                    <MapPin className="w-3 h-3 text-stone-400" />
+                    {rev.location}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
       </div>
     </section>
   );

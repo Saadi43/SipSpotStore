@@ -1,0 +1,123 @@
+{
+  "orderCounter": 1005,
+  "orders": [
+    {
+      "id": "SIP-1004",
+      "orderNumber": "#SIP-1004",
+      "customerName": "Saad Ul Hassan",
+      "customerPhone": "1516324454654562342323",
+      "orderType": "pickup",
+      "branchName": "The Sip Spot — Westridge 1",
+      "deliveryAddress": "",
+      "items": [
+        {
+          "id": "shake-4",
+          "name": "Oreo Shake",
+          "price": 350,
+          "quantity": 1
+        }
+      ],
+      "subtotal": 350,
+      "deliveryFee": 0,
+      "grandTotal": 350,
+      "status": "Pending",
+      "createdAt": "2026-08-06T17:32:33.211Z"
+    },
+    {
+      "id": "SIP-1003",
+      "orderNumber": "#SIP-1003",
+      "customerName": "Test",
+      "customerPhone": "03192145985",
+      "orderType": "delivery",
+      "branchName": "The Sip Spot — Westridge 1",
+      "deliveryAddress": "Test",
+      "items": [
+        {
+          "id": "shake-1",
+          "name": "Apple Banana Milkshake",
+          "price": 350,
+          "quantity": 1
+        }
+      ],
+      "subtotal": 350,
+      "deliveryFee": 100,
+      "grandTotal": 450,
+      "status": "Completed",
+      "createdAt": "2026-08-06T17:13:12.005Z"
+    },
+    {
+      "id": "SIP-1002",
+      "orderNumber": "#SIP-1002",
+      "customerName": "wset",
+      "customerPhone": "43363634634634",
+      "orderType": "pickup",
+      "branchName": "The Sip Spot — Westridge 1",
+      "deliveryAddress": "",
+      "items": [
+        {
+          "id": "shake-2",
+          "name": "Chocolate Banana Milkshake",
+          "price": 350,
+          "quantity": 33
+        }
+      ],
+      "subtotal": 11550,
+      "deliveryFee": 0,
+      "grandTotal": 11550,
+      "status": "Completed",
+      "createdAt": "2026-08-06T17:12:20.782Z"
+    },
+    {
+      "id": "SIP-1001",
+      "orderNumber": "#SIP-1001",
+      "customerName": "Test Customer",
+      "customerPhone": "0315-9999999",
+      "orderType": "pickup",
+      "branchName": "Westridge 1",
+      "deliveryAddress": "",
+      "items": [
+        {
+          "name": "Mango Milkshake",
+          "price": 350,
+          "quantity": 2
+        }
+      ],
+      "subtotal": 0,
+      "deliveryFee": 0,
+      "grandTotal": 700,
+      "status": "Cancelled",
+      "createdAt": "2026-08-06T16:44:49.794Z"
+    },
+    {
+      "id": "SIP-1001",
+      "orderNumber": "#SIP-1001",
+      "customerName": "Usman Khan",
+      "customerPhone": "0312-5551234",
+      "orderType": "pickup",
+      "branchName": "The Sip Spot — Westridge 1",
+      "deliveryAddress": "",
+      "items": [
+        {
+          "id": "shake-[shake-6]",
+          "name": "Mango Milkshake",
+          "price": 350,
+          "quantity": 2
+        },
+        {
+          "id": "juice-[juice-3]",
+          "name": "Mint Margarita",
+          "price": 200,
+          "quantity": 1
+        }
+      ],
+      "subtotal": 900,
+      "deliveryFee": 0,
+      "grandTotal": 900,
+      "status": "Preparing",
+      "createdAt": "2026-08-06T16:28:16.150Z"
+    }
+  ],
+  "stock": {
+    "shake-1": true
+  }
+}

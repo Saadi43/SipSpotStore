@@ -1,80 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import ThreeCanvas from './components/ThreeCanvas';
+import confetti from 'canvas-confetti';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import MarqueeBanner from './components/MarqueeBanner';
-import MenuGrid from './components/MenuGrid';
-import ItemModal from './components/ItemModal';
-import CartDrawer from './components/CartDrawer';
-import CheckoutModal from './components/CheckoutModal';
-import BadgesBanner from './components/BadgesBanner';
-import ReviewsSection from './components/ReviewsSection';
+import MenuCard from './components/MenuCard';
+import QuickViewModal from './components/QuickViewModal';
+import LocationModal from './components/LocationModal';
+import SearchModal from './components/SearchModal';
 import Footer from './components/Footer';
-import CustomCursor from './components/CustomCursor';
-import { toggleAudio, getAudioState, playIceClink } from './audio/summerSounds';
-import { STORE_INFO } from './data/menuData';
+import AdminDashboard from './components/AdminDashboard';
+import CartPage from './components/CartPage';
+
+import { PRODUCTS, MENU_CATEGORIES } from './data/menuData';
+import { toggleAudio, getAudioState } from './audio/summerSounds';
 
 export default function App() {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [viewMode, setViewMode] = useState('store'); // 'store' | 'cart' | 'admin'
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Cart state
-  const [cartItems, setCartItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
-  // Quick View Modal
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
-
-  // Checkout Modal
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-
-  // Audio Toggle state
   const [soundEnabled, setSoundEnabled] = useState(getAudioState());
 
-  // Track page scroll progress for 3D camera lerping
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = totalHeight > 0 ? window.scrollY / totalHeight : 0;
-      setScrollProgress(progress);
-    };
+  const [orderType, setOrderType] = useState('pickup');
+  const [selectedBranch, setSelectedBranch] = useState({
+    id: 'westridge',
+    name: 'The Sip Spot — Westridge 1',
+    address: 'Lane 5 Near Nisar Hospital, Main Peshawar Road, Rawalpindi',
+    city: 'Rawalpindi'
+  });
+  const [userDeliveryAddress, setUserDeliveryAddress] = useState('');
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
-  // Cart operations
-  const handleAddToCart = (product, quantity = 1) => {
-    setCartItems((prev) => {
-      const existingIdx = prev.findIndex((i) => i.id === product.id && JSON.stringify(i.customization) === JSON.stringify(product.customization));
-      if (existingIdx > -1) {
-        const updated = [...prev];
-        updated[existingIdx].quantity += quantity;
-        return updated;
-      }
-      return [...prev, { ...product, quantity }];
-    });
-  };
-
-  const handleUpdateQuantity = (index, newQty) => {
-    if (newQty <= 0) {
-      handleRemoveItem(index);
-      return;
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sip_spot_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
     }
-    setCartItems((prev) => {
-      const updated = [...prev];
-      updated[index].quantity = newQty;
-      return updated;
-    });
-  };
+  });
 
-  const handleRemoveItem = (index) => {
-    setCartItems((prev) => prev.filter((_, idx) => idx !== index));
-  };
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const handleClearCart = () => {
-    setCartItems([]);
+  useEffect(() => {
+    try {
+      localStorage.setItem('sip_spot_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [cart]);
+
+  const handleToggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
   };
 
   const handleToggleSound = () => {
@@ -82,98 +61,255 @@ export default function App() {
     setSoundEnabled(newState);
   };
 
-  const handleOrderWhatsApp = () => {
-    window.open(`https://wa.me/${STORE_INFO.phone.replace(/[^0-9]/g, '')}`, '_blank');
+  const handleAddToCart = (productToAdd) => {
+    const cartId = productToAdd.cartId || productToAdd.id;
+    setCart((prevCart) => {
+      const existingIdx = prevCart.findIndex((item) => (item.cartId || item.id) === cartId);
+      if (existingIdx > -1) {
+        const updated = [...prevCart];
+        updated[existingIdx].quantity += productToAdd.quantity || 1;
+        return updated;
+      }
+      return [...prevCart, { ...productToAdd, quantity: productToAdd.quantity || 1 }];
+    });
   };
 
-  // Determine current 3D Cup Color based on active category
-  const getCupColor = () => {
-    switch (activeCategory) {
-      case 'shakes': return '#FFA500'; // Mango Orange
-      case 'fresh_juices': return '#00FF7F'; // Mint Green
-      case 'hot_drinks': return '#CD853F'; // Caramel Tea
-      case 'cold_drinks': return '#8B4513'; // Chocolate Coffee
-      case 'food': return '#FF4500'; // Tikka Spice
-      default: return '#FF9900';
+  const handleUpdateQuantity = (cartId, newQty) => {
+    if (newQty <= 0) {
+      handleRemoveItem(cartId);
+      return;
+    }
+    setCart((prevCart) => {
+      const existingIdx = prevCart.findIndex((item) => (item.cartId || item.id) === cartId);
+      if (existingIdx > -1) {
+        const updated = [...prevCart];
+        updated[existingIdx].quantity = newQty;
+        return updated;
+      } else {
+        const product = PRODUCTS.find((p) => p.id === cartId);
+        if (product) {
+          return [...prevCart, { ...product, quantity: newQty }];
+        }
+        return prevCart;
+      }
+    });
+  };
+
+  const handleRemoveItem = (cartId) => {
+    setCart((prevCart) => prevCart.filter((item) => (item.cartId || item.id) !== cartId));
+  };
+
+  const handleOrderSuccess = () => {
+    confetti({
+      particleCount: 100,
+      spread: 60,
+      origin: { y: 0.6 },
+      colors: ['#EA580C', '#FACC15', '#16A34A', '#E11D48']
+    });
+  };
+
+  const handleSaveLocation = ({ orderType: newType, branch: newBranch, deliveryAddress: newAddress }) => {
+    setOrderType(newType);
+    setSelectedBranch(newBranch);
+    if (newAddress) setUserDeliveryAddress(newAddress);
+  };
+
+  // Filter products by search query first
+  const searchFilteredProducts = PRODUCTS.filter((product) => {
+    if (searchQuery.trim() === '') return true;
+    return (
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
+  // Get categories to display: if 'all', show all specific categories grouped
+  const categoriesToDisplay = activeCategory === 'all'
+    ? MENU_CATEGORIES.filter((c) => c.id !== 'all')
+    : MENU_CATEGORIES.filter((c) => c.id === activeCategory);
+
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const getItemQuantityInCart = (productId) => {
+    const item = cart.find((i) => (i.cartId || i.id) === productId);
+    return item ? item.quantity : 0;
+  };
+
+  const getCategorySubtitle = (id) => {
+    switch (id) {
+      case 'shakes': return 'Fresh Milk & Real Fruit Shakes';
+      case 'fresh_juices': return '100% Organic Cold-Pressed Juices';
+      case 'hot_drinks': return 'Brewed Teas & Espresso Coffees';
+      case 'cold_drinks': return 'Chilled Sodas & Iced Drinks';
+      case 'food': return 'Freshly Grilled Sandwiches & Paninis';
+      default: return 'Pure Taste, Pure Health';
     }
   };
 
+  // Render Staff Admin Dashboard View
+  if (viewMode === 'admin') {
+    return <AdminDashboard onBackToStore={() => setViewMode('store')} />;
+  }
+
+  // Render Standalone Full Cart & Checkout Page View
+  if (viewMode === 'cart') {
+    return (
+      <CartPage
+        cartItems={cart}
+        onUpdateQuantity={handleUpdateQuantity}
+        onRemoveItem={handleRemoveItem}
+        onClearCart={() => setCart([])}
+        onOrderSuccess={handleOrderSuccess}
+        onBackToStore={() => setViewMode('store')}
+        selectedOrderType={orderType}
+        selectedBranch={selectedBranch}
+        savedDeliveryAddress={userDeliveryAddress}
+        isDarkMode={isDarkMode}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#06090E] text-slate-100 relative selection:bg-amber-500 selection:text-slate-950">
+    <div
+      className={`min-h-screen font-body selection:bg-orange-500 selection:text-white relative transition-colors duration-300 ${
+        isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#FFFDF9] text-slate-900'
+      }`}
+    >
       
-      {/* Dynamic Cursor */}
-      <CustomCursor />
+      {/* Floating Staff Admin Switcher Button */}
+      <button
+        onClick={() => setViewMode('admin')}
+        className="fixed bottom-4 right-4 z-40 px-4 py-2.5 rounded-full bg-slate-900 text-white font-extrabold text-xs tracking-wider uppercase shadow-2xl hover:bg-slate-800 transition-all border border-slate-700 flex items-center gap-2 hover:scale-105"
+        title="Open Staff Admin Dashboard"
+      >
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+        <span>Staff Admin Portal</span>
+      </button>
 
-      {/* 3D WebGL Background Canvas */}
-      <ThreeCanvas scrollProgress={scrollProgress} activeColor={getCupColor()} />
-
-      {/* Main Glass Header */}
+      {/* Header */}
       <Header
-        cartCount={cartItems.reduce((acc, i) => acc + i.quantity, 0)}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenSearch={() => {
-          const el = document.getElementById('menu');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
+        cartCount={cartCount}
+        onOpenCart={() => setViewMode('cart')}
         soundEnabled={soundEnabled}
         onToggleSound={handleToggleSound}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={handleToggleDarkMode}
+        selectedOrderType={orderType}
+        selectedBranch={selectedBranch}
+        onOpenLocationModal={() => setIsLocationModalOpen(true)}
       />
 
-      {/* Hero Section */}
-      <HeroSection
-        onExploreMenu={() => {
-          const el = document.getElementById('menu');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
-        onOrderWhatsApp={handleOrderWhatsApp}
-      />
+      <main>
+        {/* Top Hero Carousel Banner */}
+        <HeroSection
+          isDarkMode={isDarkMode}
+          onExploreMenu={() => {
+            const menuEl = document.getElementById('menu');
+            if (menuEl) menuEl.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
 
-      {/* Kinetic Scrolling Marquee Banner */}
-      <MarqueeBanner />
+        {/* Summer Arch Category Navigation Bar */}
+        <MarqueeBanner
+          activeCategory={activeCategory}
+          onSelectCategory={(catId) => setActiveCategory(catId)}
+          searchQuery={searchQuery}
+          onSearchChange={(q) => setSearchQuery(q)}
+          isDarkMode={isDarkMode}
+        />
 
-      {/* Store Menu Grid Section */}
-      <MenuGrid
-        activeCategory={activeCategory}
-        onSelectCategory={setActiveCategory}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onQuickView={(product) => setQuickViewProduct(product)}
-        onAddToCart={(product) => handleAddToCart(product, 1)}
-      />
+        {/* Product Menu Section Grouped by Category */}
+        <section id="menu" className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          {categoriesToDisplay.map((catObj) => {
+            const categoryProducts = searchFilteredProducts.filter(
+              (p) => p.category === catObj.id
+            );
 
-      {/* Store Badges & Guarantees */}
-      <BadgesBanner />
+            if (categoryProducts.length === 0) return null;
 
-      {/* Customer Reviews Section */}
-      <ReviewsSection />
+            return (
+              <div key={catObj.id} id={catObj.id} className="space-y-6">
+                
+                {/* Big Giant Category Title Banner */}
+                <div className="relative w-full py-8 px-6 flex flex-col items-center justify-center text-center overflow-hidden">
+                  
+                  {/* Left Drink Cutout */}
+                  <div className="hidden sm:block absolute left-8 top-1/2 -translate-y-1/2 w-24 h-32 z-10 rotate-[-12deg] drop-shadow-xl">
+                    <img
+                      src={catObj.image}
+                      alt={catObj.label}
+                      className="w-full h-full object-cover rounded-2xl"
+                    />
+                  </div>
 
-      {/* Footer & Location Map Card */}
+                  {/* Center Giant Category Title */}
+                  <h2 className={`text-3xl sm:text-6xl font-black font-heading tracking-tight uppercase drop-shadow-xs z-10 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    {catObj.label}
+                  </h2>
+
+                  {/* Summer Orange Slogan Badge */}
+                  <div className="mt-2.5 px-5 py-1.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-extrabold text-xs sm:text-sm tracking-wider uppercase shadow-md z-10">
+                    {getCategorySubtitle(catObj.id)}
+                  </div>
+
+                  {/* Right Drink Cutout */}
+                  <div className="hidden sm:block absolute right-8 top-1/2 -translate-y-1/2 w-24 h-32 z-10 rotate-[12deg] drop-shadow-xl">
+                    <img
+                      src={catObj.image}
+                      alt={catObj.label}
+                      className="w-full h-full object-cover rounded-2xl"
+                    />
+                  </div>
+
+                </div>
+
+                {/* Product Cards Grid for this category */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {categoryProducts.map((product) => (
+                    <MenuCard
+                      key={product.id}
+                      product={product}
+                      isDarkMode={isDarkMode}
+                      itemQuantity={getItemQuantityInCart(product.id)}
+                      onQuickView={(p) => setQuickViewProduct(p)}
+                      onAddToCart={(p) => handleAddToCart(p)}
+                      onUpdateQuantity={handleUpdateQuantity}
+                    />
+                  ))}
+                </div>
+
+              </div>
+            );
+          })}
+
+        </section>
+
+      </main>
+
+      {/* Footer */}
       <Footer />
 
-      {/* Modals & Drawers */}
-      <ItemModal
+      {/* Modals */}
+      <QuickViewModal
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
         onAddToCart={handleAddToCart}
       />
 
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
-        onOpenCheckout={() => {
-          setIsCartOpen(false);
-          setIsCheckoutOpen(true);
-        }}
+      <LocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        selectedOrderType={orderType}
+        selectedBranch={selectedBranch.id}
+        onSaveLocation={handleSaveLocation}
       />
 
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        cartItems={cartItems}
-        onClearCart={handleClearCart}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onQuickView={(p) => setQuickViewProduct(p)}
+        onAddToCart={handleAddToCart}
       />
 
     </div>

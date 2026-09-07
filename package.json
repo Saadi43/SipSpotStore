@@ -5,19 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node server/index.js",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
+    "canvas-confetti": "^1.9.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "framer-motion": "^11.5.4",
+    "gsap": "^3.12.5",
+    "lucide-react": "^0.439.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "three": "^0.168.0",
-    "@react-three/fiber": "^8.17.7",
-    "@react-three/drei": "^9.112.0",
-    "gsap": "^3.12.5",
-    "framer-motion": "^11.5.4",
-    "lucide-react": "^0.439.0",
-    "canvas-confetti": "^1.9.3"
+    "supertokens-node": "^24.0.3",
+    "supertokens-web-js": "^0.16.0",
+    "three": "^0.168.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

@@ -4,21 +4,14 @@ export default function CustomCursor() {
   const [position, setPosition] = useState({ x: -100, y: -100 });
   const [trailingPos, setTrailingPos] = useState({ x: -100, y: -100 });
   const [isHovered, setIsHovered] = useState(false);
-  const [isClicking, setIsClicking] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
 
-    const handleMouseDown = () => setIsClicking(true);
-    const handleMouseUp = () => setIsClicking(false);
-
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
 
-    // Smooth trailing animation frame
     let animFrame;
     const updateTrailing = () => {
       setTrailingPos((prev) => ({
@@ -29,15 +22,13 @@ export default function CustomCursor() {
     };
     animFrame = requestAnimationFrame(updateTrailing);
 
-    // Check hoverable elements
     const handleMouseOver = (e) => {
       const target = e.target;
       if (
         target.tagName === 'BUTTON' ||
         target.tagName === 'A' ||
         target.closest('button') ||
-        target.closest('a') ||
-        target.classList.contains('clickable')
+        target.closest('a')
       ) {
         setIsHovered(true);
       } else {
@@ -49,8 +40,6 @@ export default function CustomCursor() {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mouseover', handleMouseOver);
       cancelAnimationFrame(animFrame);
     };
@@ -58,33 +47,27 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Small main point */}
+      {/* Central Cursor Point */}
       <div
-        className="fixed top-0 left-0 w-3 h-3 bg-amber-400 rounded-full pointer-events-none z-50 transition-transform duration-75 shadow-lg"
+        className="fixed top-0 left-0 w-2.5 h-2.5 bg-amber-400 rounded-full pointer-events-none z-50 transition-transform duration-75"
         style={{
-          transform: `translate3d(${position.x - 6}px, ${position.y - 6}px, 0) scale(${
-            isClicking ? 0.7 : isHovered ? 1.5 : 1
-          })`,
-          boxShadow: '0 0 12px #FFB800, 0 0 20px #FF7E00'
+          transform: `translate3d(${position.x - 5}px, ${position.y - 5}px, 0) scale(${
+            isHovered ? 1.4 : 1
+          })`
         }}
       />
 
-      {/* Trailing Liquid / Citrus Aura Ring */}
+      {/* Trailing Soft Ring */}
       <div
-        className="fixed top-0 left-0 w-10 h-10 rounded-full border-2 border-amber-400/60 pointer-events-none z-50 transition-all duration-300 ease-out flex items-center justify-center"
+        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-amber-400/40 pointer-events-none z-50 transition-all duration-300 ease-out"
         style={{
-          transform: `translate3d(${trailingPos.x - 20}px, ${trailingPos.y - 20}px, 0) scale(${
-            isHovered ? 2.2 : isClicking ? 0.9 : 1
+          transform: `translate3d(${trailingPos.x - 16}px, ${trailingPos.y - 16}px, 0) scale(${
+            isHovered ? 1.8 : 1
           })`,
-          backgroundColor: isHovered ? 'rgba(255, 184, 0, 0.15)' : 'transparent',
-          borderColor: isHovered ? '#00E676' : 'rgba(255, 184, 0, 0.4)',
-          boxShadow: isHovered ? '0 0 25px rgba(0, 230, 118, 0.4)' : 'none'
+          backgroundColor: isHovered ? 'rgba(245, 158, 11, 0.08)' : 'transparent',
+          borderColor: isHovered ? '#F59E0B' : 'rgba(245, 158, 11, 0.3)'
         }}
-      >
-        {isHovered && (
-          <span className="text-[10px] animate-spin-slow">🍋</span>
-        )}
-      </div>
+      />
     </>
   );
 }
