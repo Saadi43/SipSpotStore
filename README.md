@@ -1,2 +1,0 @@
-# SipSpotStore
-SipSpot Website 

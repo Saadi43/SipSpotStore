@@ -1,0 +1,178 @@
+:root {
+  --font-heading: 'Fredoka', 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-script: 'Caveat', cursive;
+
+  --bg-deep: #06090E;
+  --bg-card: rgba(15, 23, 42, 0.75);
+  --bg-card-hover: rgba(30, 41, 59, 0.85);
+
+  --accent-orange: #FF7E00;
+  --accent-amber: #FFB800;
+  --accent-mint: #00E676;
+  --accent-teal: #00E5FF;
+  --accent-coral: #FF3366;
+  --accent-purple: #A855F7;
+
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-dark: #0F172A;
+
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-glow: rgba(255, 138, 0, 0.3);
+
+  --shadow-glow: 0 10px 30px -10px rgba(255, 126, 0, 0.35);
+  --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  overflow-x: hidden;
+  line-height: 1.5;
+  cursor: default;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #090E17;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-orange), var(--accent-amber));
+  border-radius: 999px;
+  border: 2px solid #090E17;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-mint);
+}
+
+/* Custom Selection */
+::selection {
+  background: var(--accent-orange);
+  color: #fff;
+}
+
+/* Typography Utility Classes */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+.font-script {
+  font-family: var(--font-script);
+}
+
+.gradient-text-orange {
+  background: linear-gradient(135deg, #FF9900 0%, #FF5500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-mint {
+  background: linear-gradient(135deg, #00FF88 0%, #00B8D4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-sun {
+  background: linear-gradient(135deg, #FFE600 0%, #FF7E00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glassmorphism Box */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel-orange {
+  background: rgba(255, 126, 0, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 126, 0, 0.25);
+  box-shadow: 0 10px 30px rgba(255, 126, 0, 0.15);
+}
+
+.glass-panel-mint {
+  background: rgba(0, 230, 118, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 230, 118, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 230, 118, 0.15);
+}
+
+/* Hover Glowing Cards */
+.hover-glow {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.hover-glow:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(255, 138, 0, 0.5);
+  box-shadow: 0 20px 40px -10px rgba(255, 126, 0, 0.3);
+}
+
+/* Floating Animations */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; filter: blur(30px); }
+  50% { opacity: 0.8; filter: blur(50px); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 20s linear infinite;
+}
+
+/* Badge Styles */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Hide scrollbar for smooth horizontal scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
